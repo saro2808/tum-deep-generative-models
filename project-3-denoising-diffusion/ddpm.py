@@ -270,12 +270,12 @@ class DDPM(nn.Module):
         H = W = 28 # for MNIST
         mean = torch.zeros((batch_size, 1, H, W), device=device)
         z_n = torch.normal(mean=mean, std=torch.ones_like(mean))
-        for n in reversed(range(1, self.N)):
+        for n in reversed(range(self.N)):
             t = torch.full((batch_size,), n / self.N, dtype=torch.float32, device=device)
             predicted_noise = self.model(z_n, t)
             n64 = torch.full((batch_size,), n, dtype=torch.int64, device=device)
             x0 = self.estimate_x0(z_n, n64, predicted_noise)
-            if n == 1:
+            if n == 0:
                 break
             z_n = self.sample_z_n_previous(x0, z_n, n64)
         return x0
